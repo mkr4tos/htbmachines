@@ -22,12 +22,17 @@ trap ctrl_c INT
 main_url="https://htbmachines.github.io/bundle.js"
 
 function helpPanel(){
-  echo -e "\n${yelloyColour}[+]${endColour}${grayColour} Uso:${endColour}"
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Uso:${endColour}"
   echo -e "\t${purpleColour}u)${endColour}${grayColour} Descargar o actualizar archivos necesarios${endColour}"
   echo -e "\t${purpleColour}m)${endColour}${grayColour} Buscar por un nombre de máquina${endColour}"
   echo -e "\t${purpleColour}i)${endColour}${grayColour} Buscar por dirección IP${endColour}"
   echo -e "\t${purpleColour}d)${endColour}${grayColour} Buscar por dificultad de la máquina --> ${endColour}${greenColour} (${greenColour}Fácil${endColour},${blueColour} Media${endColour},${yellowColour} Dicícil${endColour},${redColour} Insane) ${endColour}"
   echo -e "\t${purpleColour}o)${endColour}${grayColour} Buscar por sistema operativo --> ${endColour}${greenColour} (Windows, Linux) ${endColour}"
+  echo -e "\t${purpleColour}s)${endColour}${grayColour} Buscar por Skill ${endColour}${blueColour}( la skill se debe especificar con doble '\"' ej: ${endColour}${greenColour}./htbmcahines.sh -s \"Active Directoy\") ${endColour}"
+  echo -e "\t${purpleColour}c)${endColour}${grayColour} Buscar por Certificado para el que te prepara ${endColour}"
+  echo -e "${purpleColour}    -o -d)${endColour}${grayColour} Buscar a la vez por sistema operativo y dificultad  --> ${endColour}${yellowColour}ej: ./htbmachines.sh -o Linux -d Fácil ${endColour}"
+  echo -e "${purpleColour}    -o -c)${endColour}${grayColour} Buscar a la vez por sistema operativo y certificado --> ${endColour}${yellowColour}ej: ./htbmachines.sh -o Linux -c OSCP ${endColour}"
+  echo -e "${purpleColour}    -d -c)${endColour}${grayColour} Buscar a la vez por dificultad y certificado        --> ${endColour}${yellowColour}ej: ./htbmachines.sh -d Fácil -c eWPT ${endColour}"
   echo -e "\t${purpleColour}y)${endColour}${grayColour} Obtener link de resolución de la máquina en YOUTUBE${endColour}"
   echo -e "\t${purpleColour}h)${endColour}${grayColour} Mostrar este panel de ayuda${endColour}\n"
 }
@@ -105,23 +110,23 @@ function getYoutubeLink(){
 function getMachinesDifficulty(){
   difficulty="$1"
 
-  results_check="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ','| column)"
+  results_check="$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ','| column)"
   
   if [ "$difficulty" == "Fácil" ]; then 
     echo -e "\n${yellowColour}[+]${endColour}${grayColour} Mostrando máquinas de dificultad${endColour}${greenColour} $difficulty${endColour}${greenColour}:${endColour}\n"
-    colores="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+    colores="$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
     echo -e "${greenColour}$colores${endColour}"
   elif [ "$difficulty" == "Media" ]; then
     echo -e "\n${yellowColour}[+]${endColour}${grayColour} Mostrando máquinas de dificultad${endColour}${blueColour} $difficulty${endColour}${blueColour}:${endColour}\n"
-    colores="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+    colores="$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
     echo -e "${blueColour}$colores${endColour}"
   elif [ "$difficulty" == "Difícil" ]; then
     echo -e "\n${yellowColour}[+]${endColour}${grayColour} Mostrando máquinas de dificultad${endColour}${yellowColour} $difficulty${endColour}${yellowColour}:${endColour}\n"
-    colores="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+    colores="$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
     echo -e "${yellowColour}$colores${endColour}"
   elif [ "$difficulty" == "Insane" ]; then
     echo -e "\n${yellowColour}[+]${endColour}${grayColour} Mostrando máquinas de dificultad${endColour}${redColour} $difficulty${endColour}${redColour}:${endColour}\n"
-    colores="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+    colores="$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
     echo -e "${redColour}$colores${endColour}"
 
   else
@@ -132,14 +137,14 @@ function getMachinesDifficulty(){
 function getOSMachines(){
   os="$1"
   
-  os_check="$(cat bundle.js | grep "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  os_check="$(cat bundle.js | grep -i "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   
   if [ "$os" == "Linux" ]; then
     echo -e "\n${yellowColour}[*]${endColour}${grayColour} Listando máquinas con sistema operativo${endColour}${purpleColour} $os${endColour}\n"
-    echo -e "${purpleColour}$(cat bundle.js | grep "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+    echo -e "${purpleColour}$(cat bundle.js | grep -i "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
   elif [ "$os" == "Windows" ]; then
     echo -e "\n${yellowColour}[*]${endColour}${grayColour} Listando máquinas conn sisteema operativo${endColour}${turquoiseColour} $os${endColour}\n"
-    echo -e "${turquoiseColour}$(cat bundle.js | grep "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+    echo -e "${turquoiseColour}$(cat bundle.js | grep -i "so: \"$1\"" -B5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
   else
     echo -e "\n${redColour}[!] El sistema operativo no existe, escoja uno  de los siguientes:${endColour}${blueColour}  Linux, Windows${endColour}"
   fi
@@ -150,24 +155,97 @@ function getOSDifficultyMachines(){
   difficulty="$1"
   os="$2"
   
-  check_results="$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  check_results="$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
 
-  if [ "$check_results" ] && [ "$difficulty" == "Fácil" ]; then
-    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${greenColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
-    echo -e "${greenColour}$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
-  elif [ "$check_results" ] && [ "$difficulty" == "Media" ]; then
-   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
-    echo -e "${blueColour}$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
-  elif [ "$check_results" ] && [ "$difficulty" == "Difícil" ]; then
-   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${yellowColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
-    echo -e "${yellowColour}$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
-  elif [ "$check_results" ] && [ "$difficulty" == "Insane" ]; then
-   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${redColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
-    echo -e "${redColour}$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+if [ "$check_results" ] && [ "$difficulty" == "Fácil" ]; then
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${greenColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
+  echo -e "${greenColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_results" ] && [ "$difficulty" == "Media" ]; then
+ echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
+  echo -e "${blueColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_results" ] && [ "$difficulty" == "Difícil" ]; then
+ echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${yellowColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
+  echo -e "${yellowColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_results" ] && [ "$difficulty" == "Insane" ]; then
+ echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${redColour} $difficulty${endColour}${grayColour} que tengan sistema operativo${endColour}${purpleColour} $os${endColour}${grayColour}:${endColour}\n"
+  echo -e "${redColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+else
+echo -e "\n${redColour}[!] La selección no existe o es incorrecta.${endColour}"
+echo -e "\n${yellowColour}[+]${endColour}${greenColour} Mostrando opciones disponibles:\n${endColour}${grayColour} \n\t-o: Linux, Windows${endColour}${grayColour} \n\t-d: ${greenColour}Fácil,${endColour} ${blueColour}Media,${endColour}${yellowColour} Difícil,${endColour} ${redColour}Insane${endColour}"
+
+fi
+}
+
+function getSkill(){
+skill="$1"
+
+check_skill=$(cat bundle.js | grep  "skills: " -B 6 | grep "$skill" -i -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)
+
+  if [ "$check_skill" ]; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con la skill${endColour}${yellowColour} $skill${endColour}${grayColour}:${endColour}\n"
+    echo -e "${blueColour}$(cat bundle.js | grep "skills: " -B 6 | grep "$skill" -i -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
   else
-  echo -e "\n${redColour}[!] La selección no existe o es incorrecta.${endColour}"
-  echo -e "\n${yellowColour}[+]${endColour}${greenColour} Mostrando opciones disponibles:\n${endColour}${grayColour} \n\t-o: Linux, Windows${endColour}${grayColour} \n\t-d: ${greenColour}Fácil,${endColour} ${blueColour}Media,${endColour}${yellowColour} Difícil,${endColour} ${redColour}Insane${endColour}"
+    echo -e "\n${redColour}[!] No se ha detectado la Skill $skill${endColour}"
+  fi
+}
 
+function getCertificate(){
+  certificate="$1"
+
+  check_certificate=$(cat bundle.js | grep "$certificate" -i -B 7 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)
+if [ "$check_certificate" ]; then 
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Mostrando máquinas con certificado${endColour}${blueColour} $certificate${endColour}${grayColour}:${endColour}"
+    echo -e "\n${purpleColour}$(cat bundle.js | grep "$certificate" -i -B 7 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+  else
+    echo -e "\n${redColour}[!] No se han encortado máquinas para el certificado indicado $certificate${endColour}"
+fi
+}
+
+function getOSCertificate(){
+  os="$1"
+  certificate="$2"
+
+  check_OSCertificate="$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "$certificate" -C 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  if [ "$check_OSCertificate" ] && [ "$os" == "Windows" ]  ; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas para el SO${endColour}${blueColour} $os${endColour}${grayColour} y el certificado${endColour}${greenColour} $certificate${endColour}${grayColour}:${endColour}"
+    echo -e "${turquoiseColour}\n$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "$certificate" -C 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+  elif [ "$check_OSCertificate" ] && [ "$os" == "windows" ]  ; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas para el SO${endColour}${blueColour} $os${endColour}${grayColour} y el certificado${endColour}${greenColour} $certificate${endColour}${grayColour}:${endColour}"
+    echo -e "${turquoiseColour}\n$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "$certificate" -C 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+
+  elif [ "$check_OSCertificate" ] && [ "$os" == "Linux" ]; then
+   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas para el SO${endColour}${blueColour} $os${endColour}${grayColour} y el certificado${endColour}${greenColour} $certificate${endColour}${grayColour}:${endColour}"
+    echo -e "${yellowColour}\n$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "$certificate" -C 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+     elif [ "$check_OSCertificate" ] && [ "$os" == "linux" ]; then
+   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas para el SO${endColour}${blueColour} $os${endColour}${grayColour} y el certificado${endColour}${greenColour} $certificate${endColour}${grayColour}:${endColour}"
+    echo -e "${yellowColour}\n$(cat bundle.js | grep -i "so: \"$os\"" -C 4 | grep -i "$certificate" -C 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+
+  else
+    echo -e "\n${redColour}[!] No hay máquinas con el sistema operativo ${blueColour}$os${endColour}${redColour} o el certificado${endColour}${greenColour} $certificate${endColour}${redColour} no existe${endColour}"
+  fi
+
+}
+
+function getDifficultyCertificate(){
+  difficulty="$1"
+  certificate="$2"
+
+ check_DifficultyCertificate=$(cat bundle.js | grep -i "dificultad: \"$difficulty\"" -C 7 | grep -i $certificate -B 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)
+
+  if [ "$check_DifficultyCertificate" ] && [ "$difficulty" == "Fácil" ]; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} y certificado${endColour}${yellowColour} $certificate${endColour}"
+    echo -e "\n${greenColour}$(cat bundle.js | grep  "dificultad: \"$difficulty\"" -C 7 | grep -i $certificate -B 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+  elif [ "$check_DifficultyCertificate" ] && [ "$difficulty" == "Media" ]; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} y certificado${endColour}${yellowColour} $certificate${endColour}"
+     echo -e "\n${blueColour}$(cat bundle.js | grep  "dificultad: \"$difficulty\"" -C 7 | grep -i $certificate -B 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+  elif [ "$check_DifficultyCertificate" ] && [ "$difficulty" == "Difícil" ]; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} y certificado${endColour}${yellowColour} $certificate${endColour}"
+     echo -e "\n${yellowColour}$(cat bundle.js | grep  "dificultad: \"$difficulty\"" -C 7 | grep -i $certificate -B 9 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+  elif [ "$check_DifficultyCertificate" ] && [ "$difficulty" == "Insane" ]; then
+    echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificultad${endColour}${blueColour} $difficulty${endColour}${grayColour} y certificado${endColour}${yellowColour} $certificate${endColour}"
+     echo -e "\n${redColour}$(cat bundle.js | grep  "dificultad: \"$difficulty\"" -C 7 | grep -i $certificate -B 9 | grep "name: " |grep -v "Return" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+   else
+  echo -e "\n${redColour}[!] No se han detectado máquinas con los parametros${endColour}${blueColour} $difficulty${endColour}${redColour} y${endColour}${yellowColour} $certificate${endColour}"
   fi
 }
 
@@ -177,8 +255,9 @@ declare -i parameter_counter=0
 # Chivatos
 declare -i chivato_difficulty=0
 declare -i chivato_os=0
+declare -i chivato_certificate=0
 
-while getopts "m:ui:y:o:d:h" arg ; do
+while getopts "m:ui:y:o:s:c:d:h" arg ; do
   case $arg in
     m) machineName="$OPTARG"; let parameter_counter+=1;;
     u) let parameter_counter+=2;;
@@ -186,6 +265,8 @@ while getopts "m:ui:y:o:d:h" arg ; do
     y) machineName="$OPTARG"; let parameter_counter+=4;;
     d) difficulty="$OPTARG"; chivato_difficulty=1; let parameter_counter+=5;;
     o) os="$OPTARG"; chivato_os=1; let parameter_counter+=6;;
+    s) skill="$OPTARG"; let parameter_counter+=7;;
+    c) certificate="$OPTARG"; chivato_certificate=1; let parameter_counter+=8;;
     h) ;;
   esac 
 done
@@ -202,8 +283,16 @@ elif [ $parameter_counter -eq 5 ]; then
   getMachinesDifficulty $difficulty
 elif [ $parameter_counter -eq 6 ]; then
   getOSMachines $os
+elif [ $parameter_counter -eq 7 ]; then
+  getSkill "$skill"
 elif [ $chivato_difficulty -eq 1 ] && [ $chivato_os -eq 1 ]; then
   getOSDifficultyMachines $difficulty $os
+elif [ $chivato_os -eq 1 ] && [ $chivato_certificate -eq 1 ]; then
+  getOSCertificate $os $certificate
+elif [ $chivato_difficulty -eq 1 ] && [ $chivato_certificate -eq 1 ]; then
+  getDifficultyCertificate $difficulty $certificate
+elif [ $parameter_counter -eq 8 ]; then
+  getCertificate $certificate
 else
   helpPanel
 fi
