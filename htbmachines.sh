@@ -32,7 +32,9 @@ function helpPanel(){
   echo -e "\t${purpleColour}c)${endColour}${grayColour} Buscar por Certificado para el que te prepara ${endColour}"
   echo -e "${purpleColour}    -o -d)${endColour}${grayColour} Buscar a la vez por sistema operativo y dificultad  --> ${endColour}${yellowColour}ej: ./htbmachines.sh -o Linux -d Fácil ${endColour}"
   echo -e "${purpleColour}    -o -c)${endColour}${grayColour} Buscar a la vez por sistema operativo y certificado --> ${endColour}${yellowColour}ej: ./htbmachines.sh -o Linux -c OSCP ${endColour}"
+  echo -e "${purpleColour}    -o -s)${endColour}${grayColour} Buscar a la vez por sistema operativo y skill       --> ${endColour}${yellowColour}ej: ./htbmachines.sh -o Linux -s AutoPwn ${endColour}"
   echo -e "${purpleColour}    -d -c)${endColour}${grayColour} Buscar a la vez por dificultad y certificado        --> ${endColour}${yellowColour}ej: ./htbmachines.sh -d Fácil -c eWPT ${endColour}"
+  echo -e "${purpleColour}    -d -s)${endColour}${grayColour} Buscar a la vez por dificultad y la skill           --> ${endColour}${yellowColour}ej: ./htbmachines.sh -d Fácil -s AutoPwn ${endColour}"
   echo -e "\t${purpleColour}y)${endColour}${grayColour} Obtener link de resolución de la máquina en YOUTUBE${endColour}"
   echo -e "\t${purpleColour}h)${endColour}${grayColour} Mostrar este panel de ayuda${endColour}\n"
 }
@@ -249,6 +251,45 @@ function getDifficultyCertificate(){
   fi
 }
 
+function getDifficultySkill(){
+  difficulty="$1"
+  skill="$2"
+
+  check_DifficultySkill=$(cat bundle.js | grep -i "$difficulty" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)
+if [ "$check_DifficultySkill" ] && [ "$difficulty" == "Fácil" ]; then 
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificutltad${endColour}${greenColour} $difficulty${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${greenColour}$(cat bundle.js | grep -i "$difficulty" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_DifficultySkill" ] && [ "$difficulty" == "Media" ]; then 
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificutltad${endColour}${blueColour} $difficulty${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${blueColour}$(cat bundle.js | grep -i "$difficulty" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_DifficultySkill" ] && [ "$difficulty" == "Difícil" ]; then 
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificutltad${endColour}${yellowColour} $difficulty${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${yellowColour}$(cat bundle.js | grep -i "$difficulty" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_DifficultySkill" ] && [ "$difficulty" == "Insane" ]; then 
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con dificutltad${endColour}${redColour} $difficulty${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${redColour}$(cat bundle.js | grep -i "$difficulty" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+else 
+  echo -e "\n${redColour}[!] No se han encontrado máquinas con la dificultad${endColour}${yellowColour} $difficulty${endColour}${redColour} y la skill${endColour}${yellowColour} $skill${endColour}"
+fi
+}
+
+function getOSSkill(){
+  os="$1"
+  skill="$2"
+
+  check_OSSkill=$(cat bundle.js | grep -i "so: \"$os\"" -C 5 | grep "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)
+if [ "$check_OSSkill" ] && [ "$os" == "Windows" ] || [ "$os" == "windows" ]; then
+  echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con sistema operativo${endColour}${blueColour} $os${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${blueColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+elif [ "$check_OSSkill" ] && [ "$os" == "Linux" ]; then
+   echo -e "\n${yellowColour}[+]${endColour}${grayColour} Listando máquinas con sistema operativo${endColour}${greenColour} $os${endColour}${grayColour} y skill${endColour}${purpleColour} $skill${endColour}"
+  echo -e "\n${greenColour}$(cat bundle.js | grep -i "so: \"$os\"" -C 5 | grep -i "skill" -B 7 | grep -i "$skill" -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)${endColour}"
+else
+ echo -e "\n${redColour}[!] No se han encontrado máquinas para el sistema operativo${endColour}${yellowColour} $os${endColour}${redColour} y la skill${endColour}${yellowColour} $skill${endColour}" 
+fi
+
+}
+
 #Indicadores
 declare -i parameter_counter=0
 
@@ -256,6 +297,7 @@ declare -i parameter_counter=0
 declare -i chivato_difficulty=0
 declare -i chivato_os=0
 declare -i chivato_certificate=0
+declare -i chivato_skill=0
 
 while getopts "m:ui:y:o:s:c:d:h" arg ; do
   case $arg in
@@ -265,7 +307,7 @@ while getopts "m:ui:y:o:s:c:d:h" arg ; do
     y) machineName="$OPTARG"; let parameter_counter+=4;;
     d) difficulty="$OPTARG"; chivato_difficulty=1; let parameter_counter+=5;;
     o) os="$OPTARG"; chivato_os=1; let parameter_counter+=6;;
-    s) skill="$OPTARG"; let parameter_counter+=7;;
+    s) skill="$OPTARG"; chivato_skill=1; let parameter_counter+=7;;
     c) certificate="$OPTARG"; chivato_certificate=1; let parameter_counter+=8;;
     h) ;;
   esac 
@@ -291,6 +333,10 @@ elif [ $chivato_os -eq 1 ] && [ $chivato_certificate -eq 1 ]; then
   getOSCertificate $os $certificate
 elif [ $chivato_difficulty -eq 1 ] && [ $chivato_certificate -eq 1 ]; then
   getDifficultyCertificate $difficulty $certificate
+elif [ $chivato_difficulty -eq 1 ] && [ $chivato_skill -eq 1 ]; then
+  getDifficultySkill $difficulty $skill
+elif [ $chivato_os -eq 1 ] && [ $chivato_skill -eq 1 ]; then
+  getOSSkill $os $skill
 elif [ $parameter_counter -eq 8 ]; then
   getCertificate $certificate
 else
